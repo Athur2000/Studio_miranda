@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio Miranda | Barbearia · Salão · Cosméticos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C96A;
+      --dark: #0D0D0D;
+      --dark2: #1A1A1A;
+      --dark3: #242424;
+      --cream: #F5EDD6;
+      --white: #FAFAF8;
+      --text-muted: #888;
+      --border: rgba(201,168,76,0.25);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--dark);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    a {
+    text-decoration: none;
+    }
+
+    /* ── LOADER ── */
+    #loader {
+      position: fixed; inset: 0;
+      background: var(--dark);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+      transition: opacity .6s ease;
+    }
+    #loader.hide { opacity: 0; pointer-events: none; }
+    .loader-text {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem,6vw,4rem);
+      color: var(--gold);
+      letter-spacing: .4em;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:.3} 50%{opacity:1} }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(13,13,13,.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 68px;
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+      letter-spacing: .12em;
+      text-decoration: none;
+    }
+    .nav-logo span { font-style: italic; color: var(--white); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      transition: color .3s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-cta {
+      background: var(--gold);
+      color: var(--dark) !important;
+      padding: .55rem 1.4rem;
+      border-radius: 2px;
+      font-weight: 600 !important;
+      transition: background .3s !important;
+    }
+    .nav-cta:hover { background: var(--gold-light) !important; color: var(--dark) !important; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      background:
+        radial-gradient(ellipse at 70% 50%, rgba(201,168,76,.07) 0%, transparent 60%),
+        radial-gradient(ellipse at 20% 80%, rgba(201,168,76,.05) 0%, transparent 50%),
+        var(--dark);
+      overflow: hidden;
+      padding: 80px 5% 0;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 59px,
+        rgba(201,168,76,.03) 60px
+      ),
+      repeating-linear-gradient(
+        90deg, transparent, transparent 59px,
+        rgba(201,168,76,.03) 60px
+      );
+    }
+    .hero-content { text-align: center; position: relative; z-index: 2; }
+    .hero-eyebrow {
+      font-size: .72rem;
+      letter-spacing: .5em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp .8s .3s ease forwards;
+    }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3.5rem,10vw,8rem);
+      line-height: .95;
+      font-weight: 900;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp .8s .5s ease forwards;
+    }
+    .hero-title em {
+      display: block;
+      font-style: italic;
+      color: var(--gold);
+      font-size: .65em;
+    }
+    .hero-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 460px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fadeUp .8s .7s ease forwards;
+    }
+    .hero-btns {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp .8s .9s ease forwards;
+    }
+    .btn-primary {
+      background: var(--gold);
+      color: var(--dark);
+      padding: .9rem 2.5rem;
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      border: none; cursor: pointer;
+      text-decoration: none;
+      transition: all .3s;
+      display: inline-block;
+    }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+    .btn-outline {
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      padding: .9rem 2.5rem;
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      background: transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all .3s;
+      display: inline-block;
+    }
+    .btn-outline:hover { background: rgba(201,168,76,.1); transform: translateY(-2px); }
+
+    .hero-divider {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTION COMMON ── */
+    section { padding: 100px 5%; }
+    .section-tag {
+      font-size: .68rem;
+      letter-spacing: .5em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .8rem;
+      display: block;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem,5vw,3.5rem);
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 1rem;
+    }
+    .section-title em { font-style: italic; color: var(--gold); }
+    .section-desc {
+      color: var(--text-muted);
+      font-size: .9rem;
+      line-height: 1.8;
+      max-width: 540px;
+    }
+    .gold-line {
+      width: 60px; height: 2px;
+      background: var(--gold);
+      margin: 1.5rem 0;
+    }
+
+    /* ── BARBEARIA ── */
+    #barbearia { background: var(--dark2); }
+    .barber-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+    .barber-gallery {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: auto;
+      gap: 12px;
+    }
+    .barber-gallery .photo {
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+    }
+    .barber-gallery .photo img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .6s ease;
+      max-height: 360px;
+      transform: translateY(10px);
+    }
+    .barber-gallery .photo:hover img { transform: scale(1.05); }
+    .photo-label {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,.8));
+      padding: 1.5rem .8rem .8rem;
+      font-size: .72rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .barber-gallery .photo:hover .photo-label { opacity: 1; }
+
+    .services-list { list-style: none; margin: 2rem 0; }
+    .services-list li {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      font-size: .88rem;
+    }
+    .services-list li:first-child { border-top: 1px solid rgba(255,255,255,.06); }
+    .services-list .svc-name { color: var(--white); }
+    .services-list .svc-price { color: var(--gold); font-weight: 600; }
+
+    /* ── SALÃO ── */
+    #salao { background: var(--dark); }
+    .salon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2px;
+      margin-top: 3rem;
+    }
+    .salon-card {
+      background: var(--dark3);
+      padding: 2.5rem 2rem;
+      transition: background .3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .salon-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0; height: 2px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transition: transform .4s;
+    }
+    .salon-card:hover { background: #1e1e1e; }
+    .salon-card:hover::after { transform: scaleX(1); }
+    .salon-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .salon-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      margin-bottom: .6rem;
+      color: var(--gold);
+    }
+    .salon-card p {
+      font-size: .82rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* ── COSMÉTICOS ── */
+    #cosmeticos { background: var(--dark2); }
+    .brands-intro {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+      align-items: center; margin-bottom: 4rem;
+    }
+    .brands-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 2px;
+    }
+    .brand-card {
+      background: var(--dark3);
+      padding: 2rem 1.5rem;
+      text-align: center;
+      transition: all .3s;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .brand-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at center, rgba(201,168,76,.1), transparent 70%);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .brand-card:hover { transform: translateY(-4px); }
+    .brand-card:hover::before { opacity: 1; }
+    .brand-emoji { font-size: 2.5rem; display: block; margin-bottom: .8rem; }
+    .brand-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--gold);
+      letter-spacing: .05em;
+    }
+    .brand-desc {
+      font-size: .72rem;
+      color: var(--text-muted);
+      margin-top: .4rem;
+    }
+
+    /* ── AGENDAMENTO ── */
+    #agendamento {
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(201,168,76,.08) 0%, transparent 60%),
+        var(--dark);
+    }
+    .booking-layout {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+      align-items: start;
+    }
+    .booking-form {
+      background: var(--dark3);
+      padding: 3rem;
+      border: 1px solid var(--border);
+    }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label {
+      display: block;
+      font-size: .7rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .6rem;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.1);
+      color: var(--white);
+      padding: .9rem 1rem;
+      font-family: 'Montserrat', sans-serif;
+      font-size: .85rem;
+      outline: none;
+      transition: border-color .3s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--gold);
+    }
+    .form-group select option { background: var(--dark2); }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .whatsapp-btn {
+      display: flex; align-items: center; gap: .8rem;
+      background: #25D366;
+      color: var(--dark);
+      padding: 1rem 2rem;
+      font-size: .85rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      border: none; cursor: pointer;
+      width: 100%;
+      justify-content: center;
+      text-decoration: none;
+      transition: all .3s;
+      margin-top: .5rem;
+    }
+    .whatsapp-btn:hover { background: #20BD5A; transform: translateY(-2px); }
+    .whatsapp-icon { font-size: 1.2rem; }
+
+    .booking-info h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      margin-bottom: 1.5rem;
+    }
+    .info-item {
+      display: flex; gap: 1rem; align-items: flex-start;
+      margin-bottom: 1.5rem;
+    }
+    .info-icon {
+      background: rgba(201,168,76,.1);
+      border: 1px solid var(--border);
+      width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .info-item h4 {
+      font-size: .78rem;
+      color: var(--gold);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: .3rem;
+    }
+    .info-item p {
+      font-size: .85rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark2);
+      border-top: 1px solid var(--border);
+      padding: 3rem 5%;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: var(--gold);
+    }
+    .footer-copy {
+      font-size: .75rem;
+      color: var(--text-muted);
+    }
+    .footer-social { display: flex; gap: 1rem; }
+    .social-link {
+      width: 38px; height: 38px;
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: .9rem;
+      transition: all .3s;
+    }
+    .social-link:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── WHATSAPP FLOAT ── */
+    .wa-float {
+      position: fixed;
+      bottom: 2rem; right: 2rem;
+      background: #25D366;
+      width: 58px; height: 58px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      z-index: 50;
+      box-shadow: 0 4px 20px rgba(37,211,102,.4);
+      text-decoration: none;
+      animation: waPulse 2s infinite;
+      transition: transform .3s;
+    }
+    .wa-float:hover { transform: scale(1.1); }
+    @keyframes waPulse {
+      0%,100%{ box-shadow: 0 4px 20px rgba(37,211,102,.4); }
+      50%{ box-shadow: 0 4px 40px rgba(37,211,102,.7); }
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.85);
+      z-index: 200;
+      align-items: center; justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--dark2);
+      border: 1px solid var(--border);
+      max-width: 480px; width: 100%;
+      padding: 2.5rem;
+      position: relative;
+      animation: fadeUp .4s ease;
+    }
+    .modal h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: var(--gold);
+      margin-bottom: .5rem;
+    }
+    .modal p { color: var(--text-muted); font-size: .88rem; line-height: 1.7; margin-bottom: 1.5rem; }
+    .modal-close {
+      position: absolute; top: 1rem; right: 1rem;
+      background: none; border: none;
+      color: var(--text-muted); font-size: 1.4rem;
+      cursor: pointer; transition: color .3s;
+    }
+    .modal-close:hover { color: var(--white); }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width: 768px) {
+      .nav-links { display: none; }
+      .barber-layout,
+      .brands-intro,
+      .booking-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .barber-gallery { grid-template-columns: 1fr; }
+      .barber-gallery .photo:first-child { grid-column: 1; }
+      .barber-gallery .photo img,
+      .barber-gallery .photo:first-child img { max-height: 260px; }
+      .form-row { grid-template-columns: 1fr; }
+      .booking-form { padding: 2rem 1.5rem; }
+    }
+
+    /* SCROLL REVEAL */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
+  </head>
+    <body>
+
+    <!-- LOADER -->
+    <div id="loader">
+      <span class="loader-text">STUDIO</span>
+    </div>
+
+    <!-- NAV -->
+    <nav>
+      <a href="#" class="nav-logo">Studio <span>Miranda</span></a>
+      <ul class="nav-links">
+        <li><a href="#barbearia">Barbearia</a></li>
+        <li><a href="#salao">Salão</a></li>
+        <li><a href="#cosmeticos">Cosméticos</a></li>
+        <li><a href="#agendamento" class="nav-cta">Agendar</a></li>
+      </ul>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="home">
+      <div class="hero-content">
+        <p class="hero-eyebrow">Beleza · Estilo · Cuidado</p>
+        <h1 class="hero-title">
+          Studio<br><em>Miranda</em>
+        </h1>
+        <p class="hero-subtitle">
+          Barbearia moderna, salão de beleza completo e os melhores cosméticos das maiores marcas do Brasil — tudo em um só lugar.
+        </p>
+        <div class="hero-btns">
+          <a href="#agendamento" class="btn-primary">Agendar Horário</a>
+          <a href="#barbearia" class="btn-outline">Explorar</a>
+        </div>
+      </div>
+      <div class="hero-divider"></div>
+    </section>
+
+    <!-- BARBEARIA -->
+    <section id="barbearia">
+      <div class="barber-layout">
+        <div class="reveal">
+          <span class="section-tag">01 — Barbearia</span>
+          <h2 class="section-title">Cortes que<br><em>definem</em> estilo</h2>
+          <div class="gold-line"></div>
+          <p class="section-desc">Nossos barbeiros especializados entregam precisão e estilo em cada corte. Do degradê clássico ao design personalizado.</p>
+          <ul class="services-list">
+            <li><span class="svc-name">Corte Masculino</span><span class="svc-price">A consultar</span></li>
+            <li><span class="svc-name">Barba</span><span class="svc-price">A consultar</span></li>
+            <li><span class="svc-name">Corte + Barba</span><span class="svc-price">A consultar</span></li>
+            <li><span class="svc-name">Degradê / Fade</span><span class="svc-price">A consultar</span></li>
+            <li><span class="svc-name">Design de Sobrancelha</span><span class="svc-price">A consultar</span></li>
+            <li><span class="svc-name">Hidratação Capilar</span><span class="svc-price">A consultar</span></li>
+          </ul>
+          <a href="#agendamento" class="btn-primary">Agendar na Barbearia</a>
+        </div>
+        <div class="barber-gallery reveal">
+          <div class="photo">
+            <img src="fotos/WhatsApp Image 2026-05-13 at 11.31.02.jpeg" alt="Corte Degradê com Cacheados">
+            <div class="photo-label"></div>
+          </div>
+          <div class="photo">
+            <img src="fotos/WhatsApp Image 2026-05-13 at 11.31.01.jpeg" alt="Design no Cabelo">
+            <div class="photo-label"></div>
+          </div>
+          <div class="photo">
+            <img src="fotos/WhatsApp Image 2026-05-13 at 11.31.01 (1).jpeg" alt="Corte Curto Degradê">
+            <div class="photo-label"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SALÃO -->
+    <section id="salao">
+      <div style="text-align:center; max-width:600px; margin: 0 auto 1rem;" class="reveal">
+        <span class="section-tag">02 — Salão de Beleza</span>
+        <h2 class="section-title">Realce a sua<br><em>beleza natural</em></h2>
+        <div class="gold-line" style="margin: 1.5rem auto;"></div>
+        <p class="section-desc" style="margin: 0 auto;">Tratamentos capilares e estéticos com as melhores técnicas e produtos do mercado para você se sentir incrível.</p>
+      </div>
+      <div class="salon-grid reveal">
+        <div class="salon-card">
+          <div class="salon-icon">✂️</div>
+          <h3>Corte Feminino</h3>
+          <p>Cortes modernos e clássicos adaptados ao formato do rosto e personalidade de cada cliente.</p>
+        </div>
+        <div class="salon-card">
+          <div class="salon-icon">🎨</div>
+          <h3>Coloração</h3>
+          <p>Tintura, mechas e balayage.</p>
+        </div>
+        <div class="salon-card">
+          <div class="salon-icon">💆</div>
+          <h3>Tratamentos</h3>
+          <p>Hidratação profunda, reconstrução capilar, cronograma capilar e tratamentos personalizados.</p>
+        </div>
+        <div class="salon-card">
+          <div class="salon-icon">🌊</div>
+          <h3>Escova &amp; Progressiva</h3>
+          <p>Escova modeladora, progressiva e alisamento com proteção máxima para seus fios.</p>
+        </div>
+        <div class="salon-card">
+          <div class="salon-icon">💅</div>
+          <h3>Manicure &amp; Pedicure</h3>
+          <p>Unhas impecáveis com esmaltes das melhores marcas, gel, acrílico e nail art.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- COSMÉTICOS -->
+    <section id="cosmeticos">
+      <div class="brands-intro">
+        <div class="reveal">
+          <span class="section-tag">03 — Cosméticos</span>
+          <h2 class="section-title">As melhores<br><em>marcas</em> aqui</h2>
+          <div class="gold-line"></div>
+          <p class="section-desc">Representamos as marcas mais renomadas do Brasil. Encontre seus produtos favoritos e descubra novidades com o melhor preço e atendimento.</p>
+          <br>
+          <a href="#agendamento" class="btn-outline">Consultar Produtos</a>
+        </div>
+        <div class="reveal">
+          <p style="color:var(--text-muted); font-size:.85rem; line-height:1.9;">
+            Nosso studio é revendedor autorizado das maiores marcas de cosméticos do país. Perfumes, maquiagem, skincare, produtos para cabelo e muito mais com a comodidade do atendimento personalizado.<br><br>
+            Faça pedidos pelo WhatsApp ou visite nossa loja!
+          </p>
+        </div>
+      </div>
+      <div class="brands-grid reveal">
+        <div class="brand-card" onclick="openModal('natura')">
+          <span class="brand-emoji">🌿</span>
+          <div class="brand-name">Natura</div>
+          <div class="brand-desc">Beleza comprometida</div>
+        </div>
+        <div class="brand-card" onclick="openModal('avon')">
+          <span class="brand-emoji">🌹</span>
+          <div class="brand-name">Avon</div>
+          <div class="brand-desc">Beleza que transforma</div>
+        </div>
+        <div class="brand-card" onclick="openModal('boticario')">
+          <span class="brand-emoji">🍃</span>
+          <div class="brand-name">O Boticário</div>
+          <div class="brand-desc">A arte da beleza</div>
+        </div>
+        <div class="brand-card" onclick="openModal('eudora')">
+          <span class="brand-emoji">💎</span>
+          <div class="brand-name">Eudora</div>
+          <div class="brand-desc">Estilo &amp; sofisticação</div>
+        </div>
+        <div class="brand-card" onclick="openModal('demilos')">
+          <span class="brand-emoji">💄</span>
+          <div class="brand-name">Demilos</div>
+          <div class="brand-desc">Tendência e cor</div>
+        </div>
+        <div class="brand-card" onclick="openModal('oui')">
+          <span class="brand-emoji">🌸</span>
+          <div class="brand-name">Oui</div>
+          <div class="brand-desc">Leveza &amp; feminilidade</div>
+        </div>
+        <div class="brand-card" onclick="openModal('tupperware')">
+          <span class="brand-emoji">🏠</span>
+          <div class="brand-name">Tupperware</div>
+          <div class="brand-desc">Qualidade para o lar</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AGENDAMENTO -->
+    <section id="agendamento">
+      <div class="booking-layout">
+        <div class="reveal">
+          <span class="section-tag">04 — Agendamento</span>
+          <h2 class="section-title">Reserve seu<br><em>horário</em></h2>
+          <div class="gold-line"></div>
+          <div class="booking-info">
+            <h3 style="font-size:1.1rem; margin-bottom:1.5rem; color:var(--text-muted); font-family:'Montserrat',sans-serif; font-weight:400;">Agende pelo formulário ou diretamente pelo WhatsApp — respondemos rapidinho!</h3>
+            <div class="info-item">
+              <div class="info-icon">📍</div>
+              <div>
+                <a href="https://maps.google.com/?q=Studio+Miranda,+Goiás,+Brasil" target="_blank"><h4>Localização</h4></a>
+                <p>Studio Miranda — Goiás, Brasil</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">⏰</div>
+              <div>
+                <h4>Horário de Atendimento</h4>
+                <p>Seg–Sáb: 8h às 18h30</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">📱</div>
+              <div>
+                <h4>WhatsApp</h4>
+                <p>(62) 99350-8343</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="booking-form reveal">
+          <h3 style="font-family:'Playfair Display',serif; font-size:1.5rem; margin-bottom:2rem;">Preencha os dados</h3>
+          <div class="form-group">
+            <label>Seu Nome</label>
+            <input type="text" id="f-name" placeholder="Nome completo">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>WhatsApp</label>
+              <input type="tel" id="f-phone" placeholder="(62) 9 0000-0000">
+            </div>
+            <div class="form-group">
+              <label>Data</label>
+              <input type="date" id="f-date">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Horário</label>
+              <select id="f-time">
+                <option value="">Selecione</option>
+                <option>08:00</option><option>08:30</option>
+                <option>09:00</option><option>09:30</option>
+                <option>10:00</option><option>10:30</option>
+                <option>11:00</option><option>11:30</option>
+                <option>13:00</option><option>13:30</option>
+                <option>14:00</option><option>14:30</option>
+                <option>15:00</option><option>15:30</option>
+                <option>16:00</option><option>16:30</option>
+                <option>17:00</option><option>17:30</option>
+                <option>18:00</option><option>18:30</option>
+                <option>19:00</option><option>19:30</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Área</label>
+              <select id="f-area">
+                <option value="">Selecione</option>
+                <option>Barbearia</option>
+                <option>Salão de Beleza</option>
+                <option>Cosméticos</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Serviço Desejado</label>
+            <select id="f-service">
+              <option value="">Selecione o serviço</option>
+              <option>Corte Masculino</option>
+              <option>Barba Completa</option>
+              <option>Corte + Barba</option>
+              <option>Degradê / Fade</option>
+              <option>Corte Feminino</option>
+              <option>Coloração / Mechas</option>
+              <option>Hidratação Capilar</option>
+              <option>Escova / Progressiva</option>
+              <option>Manicure &amp; Pedicure</option>
+              <option>Estética Facial</option>
+              <option>Consulta de Cosméticos</option>
+              <option>Outro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Observações (opcional)</label>
+            <textarea id="f-obs" placeholder="Alguma informação adicional..."></textarea>
+          </div>
+          <button class="whatsapp-btn" onclick="sendWhatsApp()">
+            <span class="whatsapp-icon">💬</span>
+            Confirmar pelo WhatsApp
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-logo">Studio Beleza</div>
+      <p class="footer-copy">© 2026 Studio Beleza · Todos os direitos reservados</p>
+      <div class="footer-social">
+        <a href="https://wa.me/5562993508343" target="_blank" class="social-link">📱</a>
+        <a href="#" class="social-link">📷</a>
+        <a href="#" class="social-link">👍</a>
+      </div>
+    </footer>
+
+    <!-- WA FLOAT -->
+    <a href="https://wa.me/5562993508343" class="wa-float" target="_blank" title="Fale conosco">💬</a>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modal" onclick="closeModal(event)">
+      <div class="modal">
+        <button class="modal-close" onclick="document.getElementById('modal').classList.remove('active')">✕</button>
+        <h2 id="modal-title"></h2>
+        <p id="modal-body"></p>
+        <a id="modal-wa" href="#" target="_blank" class="whatsapp-btn">
+          <span class="whatsapp-icon">💬</span>
+          Pedir pelo WhatsApp
+        </a>
+      </div>
+    </div>
+
+    <script>
+      // LOADER
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          document.getElementById('loader').classList.add('hide');
+        }, 1200);
+      });
+
+      // SCROLL REVEAL
+      const reveals = document.querySelectorAll('.reveal');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) e.target.classList.add('visible');
+        });
+      }, { threshold: 0.12 });
+      reveals.forEach(el => observer.observe(el));
+
+      // WHATSAPP FORM
+      function sendWhatsApp() {
+        const name = document.getElementById('f-name').value.trim();
+        const phone = document.getElementById('f-phone').value.trim();
+        const date = document.getElementById('f-date').value;
+        const time = document.getElementById('f-time').value;
+        const area = document.getElementById('f-area').value;
+        const service = document.getElementById('f-service').value;
+        const obs = document.getElementById('f-obs').value.trim();
+
+        if (!name || !date || !time || !service) {
+          alert('Por favor, preencha: nome, data, horário e serviço.');
+          return;
+        }
+
+        const dateFormatted = date ? new Date(date + 'T12:00:00').toLocaleDateString('pt-BR') : '';
+
+        let msg = `Olá! Gostaria de agendar um horário no Studio Beleza 💇‍♂️✨\n\n`;
+        msg += `👤 *Nome:* ${name}\n`;
+        if (phone) msg += `📱 *WhatsApp:* ${phone}\n`;
+        msg += `📅 *Data:* ${dateFormatted}\n`;
+        msg += `⏰ *Horário:* ${time}\n`;
+        if (area) msg += `🏠 *Área:* ${area}\n`;
+        msg += `💈 *Serviço:* ${service}\n`;
+        if (obs) msg += `📝 *Obs:* ${obs}\n`;
+
+        const url = `https://wa.me/5562993508343?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+      }
+
+      // BRAND MODAL
+      const brands = {
+        natura: {
+          title: '🌿 Natura',
+          body: 'Cosméticos sustentáveis com ingredientes da biodiversidade brasileira. Perfumes, maquiagem, skincare e cuidados para o corpo e cabelo.'
+        },
+        avon: {
+          title: '🌹 Avon',
+          body: 'Uma das maiores marcas de beleza do mundo. Maquiagem, fragrâncias, skincare e muito mais com ótimo custo-benefício.'
+        },
+        boticario: {
+          title: '🍃 O Boticário',
+          body: 'A maior franquia de perfumaria e cosméticos do Brasil. Perfumes exclusivos, linhas de cuidado e maquiagem de alta qualidade.'
+        },
+        eudora: {
+          title: '💎 Eudora',
+          body: 'Marca sofisticada do Grupo Boticário. Perfumes marcantes, maquiagem premium e tratamentos capilares especializados.'
+        },
+        demilos: {
+          title: '💄 Demilos',
+          body: 'Maquiagem com tendência e cor. Produtos de alta pigmentação para compor looks arrojados e únicos.'
+        },
+        oui: {
+          title: '🌸 Oui',
+          body: 'Linha delicada e feminina com fragrâncias suaves e produtos de cuidado pessoal que realçam a feminilidade.'
+        },
+        tupperware: {
+          title: '🏠 Tupperware',
+          body: 'Produtos de qualidade para organização e cozinha. Potes, utensílios e soluções práticas para o dia a dia.'
+        }
+      };
+
+      function openModal(brand) {
+        const b = brands[brand];
+        document.getElementById('modal-title').textContent = b.title;
+        document.getElementById('modal-body').textContent = b.body;
+        const msg = `Olá! Tenho interesse nos produtos *${b.title}* 🛒\nPoderia me informar sobre disponibilidade e preços?`;
+        document.getElementById('modal-wa').href = `https://wa.me/5562993508343?text=${encodeURIComponent(msg)}`;
+        document.getElementById('modal').classList.add('active');
+      }
+
+      function closeModal(e) {
+        if (e.target === document.getElementById('modal')) {
+          document.getElementById('modal').classList.remove('active');
+        }
+      }
+    </script>
+    </body>
+</html>
